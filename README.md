@@ -1,199 +1,177 @@
-XplainDfile
+# XplainDfile
 
-XplainDfile is a document-based question answering web application.
-Users can upload a PDF file and ask questions about its content. The system first tries to answer strictly from the uploaded document. If the document does not contain the answer, it transparently falls back to a general language model.
+XplainDfile is a document-based question answering web application. Users can upload a PDF file and ask questions about its content. The system first attempts to answer strictly from the uploaded document. If the document does not contain the answer, it transparently falls back to a general language model.
 
-The project was built to understand and implement a Retrieval Augmented Generation (RAG) pipeline end-to-end, with clear separation between document-grounded answers and model-based answers.
+This project was built to understand and implement a Retrieval Augmented Generation (RAG) system from scratch, with explicit control over retrieval, prompting, and fallback behavior.
 
-What the application does
+---
 
-Accepts a PDF file from the user
+## Key Features
 
-Extracts readable text from the document
+* PDF-only document upload
+* Automatic text extraction from uploaded files
+* Chunking and embedding of document text
+* Semantic search using a vector database
+* Context-restricted answering to avoid hallucinations
+* Automatic fallback to LLM when the document lacks the answer
+* Clear indication of answer source (document vs model)
 
-Splits the text into smaller chunks
+---
 
-Converts chunks into vector embeddings
+## Motivation
 
-Stores embeddings in a vector database
+Many document chat systems mix document content and model knowledge, which can lead to hallucinated or misleading responses. XplainDfile was designed to solve this by:
 
-Retrieves relevant chunks for each question
+* Enforcing document-grounded answers whenever possible
+* Explicitly detecting when the document does not contain the answer
+* Making the system behavior transparent and explainable
+* Understanding the internals of RAG instead of relying on black-box tools
 
-Forces the model to answer only from retrieved context
+---
 
-Falls back to a general LLM when the document does not contain the answer
+## Tech Stack
 
-Clearly shows the source of each answer
+### Backend
 
-Why this project
+* Python
+* FastAPI
+* LangChain
+* Pinecone (vector database)
+* HuggingFace sentence-transformers
+* Groq LLM API
+* PyPDF
 
-Many document chat systems mix document content and model knowledge, which can lead to hallucinated or misleading answers.
-XplainDfile was designed with the following goals:
+### Frontend
 
-Enforce document-grounded responses
+* HTML
+* CSS
+* Vanilla JavaScript (no frameworks)
 
-Detect when a document does not contain the answer
+---
 
-Keep the system behavior transparent and explainable
+## Backend Design Overview
 
-Understand how RAG systems work internally instead of relying on black-box tools
+* **main.py**
+  Acts as the entry point for the FastAPI server. Defines API routes for uploading documents, chatting, resetting sessions, and serves the frontend.
 
-Tech stack
+* **upload.py**
+  Handles PDF validation and text extraction. Ensures only readable PDF files are accepted.
 
-Backend
+* **vectorstore.py**
+  Splits extracted text into chunks, generates embeddings, and manages vector index creation and deletion in Pinecone.
 
-Python
+* **rag.py**
+  Implements the core RAG logic. Retrieves relevant chunks, enforces context-only answering, and handles fallback to the language model when required.
 
-FastAPI
+* **state.py**
+  Maintains in-memory session state, including the active document, retriever, and index name.
 
-LangChain
+* **schemas.py**
+  Defines request and response models using Pydantic.
 
-Pinecone (vector database)
+* **config.py**
+  Centralized configuration for API keys, model selection, and retrieval parameters.
 
-HuggingFace sentence-transformers
+---
 
-Groq LLM API
-
-PyPDF
-
-Frontend
-
-HTML
-
-CSS
-
-Vanilla JavaScript (no frameworks)
-
-Project structure
-XplainDfile/
-├── backend/
-│   ├── app/
-│   │   ├── main.py
-│   │   ├── rag.py
-│   │   ├── upload.py
-│   │   ├── vectorstore.py
-│   │   ├── state.py
-│   │   ├── schemas.py
-│   │   └── config.py
-│   ├── requirements.txt
-│   └── .env            (not committed)
-│
-├── frontend/
-│   ├── index.html
-│   ├── app.js
-│   └── styles.css
-│
-└── README.md
-
-Backend architecture overview
-
-main.py
-Entry point of the FastAPI application. Defines API routes for file upload, chat, session reset, and also serves the frontend.
-
-upload.py
-Handles PDF validation and text extraction. Rejects unsupported file formats and empty PDFs.
-
-vectorstore.py
-Splits extracted text into chunks, generates embeddings, and manages Pinecone index creation and deletion.
-
-rag.py
-Implements the core RAG logic. Retrieves relevant chunks, enforces context-only answering, and falls back to the language model when required.
-
-state.py
-Maintains in-memory session state such as the active document, retriever, and vector index name.
-
-schemas.py
-Defines request and response models using Pydantic.
-
-config.py
-Centralized configuration for API keys, model selection, and retrieval parameters.
-
-Frontend overview
+## Frontend Overview
 
 The frontend is intentionally minimal and framework-free:
 
-PDF-only file upload
+* PDF upload interface
+* Chat-style user interaction
+* Visual indicator showing answer source
+* Reset option to clear the active session
 
-Chat-style interface
+All communication with the backend is handled using standard `fetch` API calls.
 
-Clear indicator showing whether an answer came from the document or the language model
+---
 
-Reset button to clear the current session
+## High-Level Workflow
 
-The frontend communicates with the backend using simple fetch API calls.
+1. User uploads a PDF document
+2. Text is extracted and split into chunks
+3. Chunks are embedded and stored in the vector database
+4. User asks a question
+5. Relevant chunks are retrieved using similarity search
+6. The model answers strictly using retrieved context
+7. If context is insufficient, the system falls back to the LLM
 
-How the system works (high level flow)
+---
 
-User uploads a PDF
+## Running the Project Locally
 
-Text is extracted and split into chunks
+### Clone the repository
 
-Chunks are embedded and stored in Pinecone
-
-User asks a question
-
-Relevant chunks are retrieved using similarity search
-
-The model is instructed to answer only from the retrieved context
-
-If context is insufficient, the system falls back to the LLM
-
-How to run locally
-Clone the repository
+```bash
 git clone https://github.com/your-username/XplainDfile.git
 cd XplainDfile
+```
 
-Create and activate a virtual environment
+### Create and activate a virtual environment
+
+```bash
 python -m venv xplaindfile-env
+```
 
+**Windows**
 
-Windows:
-
+```bash
 xplaindfile-env\Scripts\activate
+```
 
+**Linux / macOS**
 
-Linux / macOS:
-
+```bash
 source xplaindfile-env/bin/activate
+```
 
-Install dependencies
+### Install dependencies
+
+```bash
 pip install -r backend/requirements.txt
+```
 
-Set environment variables
+### Configure environment variables
 
-Create a .env file inside the backend/ directory:
+Create a `.env` file inside the `backend` directory:
 
+```
 GROQ_API_KEY=your_groq_api_key
 PINECONE_API_KEY=your_pinecone_api_key
+```
 
-Run the backend server
+### Start the server
+
+```bash
 uvicorn app.main:app --reload
+```
 
-Open in browser
+### Open in browser
+
+```
 http://localhost:8000
+```
 
-Key learnings
+---
 
-End-to-end implementation of a RAG system
+## Learnings and Takeaways
 
-Practical use of vector databases for semantic search
+* Practical understanding of Retrieval Augmented Generation
+* Importance of chunking and embedding strategies
+* Real-world use of vector databases for semantic search
+* Prompt control to reduce hallucinations
+* Clean backend structuring using FastAPI
+* Frontend-backend coordination in AI applications
 
-Importance of chunking and retrieval strategy
+---
 
-Prompt control to reduce hallucinations
+## Future Improvements
 
-Clean FastAPI backend structuring
+* Support for multiple document uploads
+* Persistent chat history
+* Additional document formats
+* Source citation highlighting
+* User authentication
 
-Frontend and backend integration for AI applications
-
-Future improvements
-
-Support for multiple documents
-
-Persistent chat history
-
-Additional document formats
-
-Citation highlighting
-
-User authentication
+---
