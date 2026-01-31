@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>XplainDfile</title>
+
+  <!-- Pico.css baseline -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+
+  <!-- Local styles -->
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+
+  <header class="container header-row">
+    <div class="brand"><strong>XplainDfile</strong></div>
+
+    <div class="controls">
+      <label class="file-label" title="Choose a PDF">
+        <input id="pdfUpload" type="file" accept=".pdf" hidden />
+        <span id="fileLabelText">Choose PDF</span>
+      </label>
+
+      <button id="resetBtn" type="button" title="Reset session">RESET</button>
+    </div>
+
+    <div class="active-info">
+      <small id="activeSource">Upload a PDF to start</small>
+    </div>
+  </header>
+
+  <main class="container main-body">
+    <section id="chatWindow" class="chat-window" aria-live="polite">
+      <!-- Initial greeting inserted by JS -->
+    </section>
+  </main>
+
+  <footer class="container footer-row">
+    <form id="chatForm" class="chat-form" onsubmit="return false;">
+      <textarea id="chatInput" rows="2" placeholder="Upload a PDF to start chatting" disabled></textarea>
+
+      <button id="sendBtn" class="send-btn" type="button" disabled aria-label="Send" title="Send message">
+        <!-- paper plane SVG -->
+        <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M2 21l21-9L2 3v7l15 2-15 2z" fill="currentColor"></path>
+        </svg>
+      </button>
+    </form>
+  </footer>
+
+  <script src="./app.js"></script>
+</body>
+</html>

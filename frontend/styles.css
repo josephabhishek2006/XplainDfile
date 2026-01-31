@@ -1,0 +1,219 @@
+/* Basic dark theme + overrides */
+:root {
+  --bg: #0f1720;
+  --panel: #0b1220;
+  --muted: #9aa4b2;
+  --accent: #3b82f6; /* blue */
+  --accent-llm: #fbbf24; /* yellow */
+  --bubble-bg: #111827;
+  --user-bg: linear-gradient(135deg,#06b6d4,#7c3aed); /* subtle */
+  --radius: 14px;
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: #e6eef8;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  margin: 0;
+  padding: 0;
+}
+
+/* Header */
+.header-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: space-between;
+  padding: 12px 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.header-row .brand {
+  font-size: 1.1rem;
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.file-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.03);
+  cursor: pointer;
+  user-select: none;
+  font-weight: 600;
+}
+
+.file-label:hover { filter: brightness(1.05); }
+
+.file-label.disabled {
+  opacity: 0.45;
+  cursor: default;
+  pointer-events: none;
+}
+
+#resetBtn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.02);
+  color: inherit;
+  border: 1px solid rgba(255,255,255,0.03);
+  cursor: pointer;
+}
+#resetBtn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* Active source line */
+.active-info {
+  margin-top: 6px;
+  padding-left: 4px;
+}
+#activeSource { color: var(--muted); }
+
+/* Main chat area */
+.main-body {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: calc(100vh - 200px);
+  align-items: stretch;
+}
+
+.chat-window {
+  width: 100%;
+  max-height: 60vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255,255,255,0.01);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.02);
+}
+
+/* Messages */
+.message {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 100%;
+}
+.message.assistant { justify-content: flex-start; }
+.message.user { justify-content: flex-end; }
+
+/* Bubble */
+.bubble {
+  display: inline-block;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  box-shadow: 0 1px 6px rgba(2,6,23,0.6);
+  max-width: 60%; /* exact requirement */
+  white-space: pre-wrap;
+  background: var(--bubble-bg);
+  color: #e6eef8;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+/* Small variant for greeting, processing, thinking */
+.bubble.small {
+  max-width: 36%;
+  font-size: 0.95rem;
+  opacity: 0.95;
+  padding: 8px 12px;
+}
+
+/* user bubble style (right) */
+.message.user .bubble {
+  background: linear-gradient(135deg, rgba(59,130,246,0.95), rgba(124,58,237,0.95));
+  color: white;
+  text-align: right;
+}
+
+/* Tags */
+.tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  padding: 4px 8px;
+  border-radius: 999px;
+  margin-right: 8px;
+  vertical-align: middle;
+  font-weight: 700;
+}
+.tag.file { background: var(--accent); color: white; }
+.tag.llm  { background: var(--accent-llm); color: #111827; }
+
+/* Footer, form fixed-ish */
+.footer-row {
+  position: sticky;
+  bottom: 0;
+  padding: 12px 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+  border-top: 1px solid rgba(255,255,255,0.03);
+}
+
+.chat-form {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  width: 85%;
+  margin: 0 auto;
+}
+
+#chatInput {
+  flex: 1;
+  min-height: 48px;
+  max-height: 160px;
+  resize: none;
+  border-radius: 10px;
+  padding: 12px;
+  background: rgba(255,255,255,0.03);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.03);
+}
+#chatInput:disabled { opacity: 0.6; cursor: default; }
+
+/* Send button circular */
+.send-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(180deg, #4f46e5, #06b6d4);
+  color: white;
+  box-shadow: 0 6px 18px rgba(3,7,18,0.6);
+}
+.send-btn:disabled { opacity: 0.45; cursor: default; }
+
+/* Toast ephemeral bubble */
+.toast {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 22vh;
+  z-index: 9999;
+}
+
+/* Responsive tweaks */
+@media (max-width: 700px) {
+  .chat-form { width: 96%; gap: 8px; }
+  .bubble.small { max-width: 60%; }
+  .bubble { max-width: 90%; }
+  .chat-window { max-height: 56vh; }
+}
