@@ -1,48 +1,45 @@
 XplainDfile
 
 XplainDfile is a document-based question answering web application.
-Users can upload a PDF and ask questions about its content. The system first tries to answer strictly from the uploaded document, and only if the document does not contain the answer, it falls back to a general language model.
+Users can upload a PDF file and ask questions about its content. The system first tries to answer strictly from the uploaded document. If the document does not contain the answer, it transparently falls back to a general language model.
 
-The main goal of this project was to understand and implement a Retrieval Augmented Generation (RAG) pipeline from scratch rather than relying on black-box tools.
+The project was built to understand and implement a Retrieval Augmented Generation (RAG) pipeline end-to-end, with clear separation between document-grounded answers and model-based answers.
 
-What this project does
+What the application does
 
-Accepts a PDF upload from the user
+Accepts a PDF file from the user
 
-Extracts readable text from the PDF
+Extracts readable text from the document
 
-Splits the text into manageable chunks
+Splits the text into smaller chunks
 
 Converts chunks into vector embeddings
 
-Stores embeddings in a Pinecone vector database
+Stores embeddings in a vector database
 
-On every user question:
+Retrieves relevant chunks for each question
 
-Retrieves the most relevant chunks using similarity search
+Forces the model to answer only from retrieved context
 
-Forces the model to answer only from the retrieved context
+Falls back to a general LLM when the document does not contain the answer
 
-Falls back to a general LLM response if the document does not contain the answer
+Clearly shows the source of each answer
 
-Clearly shows whether the response came from the file or the LLM
+Why this project
 
-Why XplainDfile
+Many document chat systems mix document content and model knowledge, which can lead to hallucinated or misleading answers.
+XplainDfile was designed with the following goals:
 
-Most document chat systems mix document content and model knowledge, which can lead to hallucinations.
-XplainDfile was designed to:
-
-Enforce document-grounded answers
+Enforce document-grounded responses
 
 Detect when a document does not contain the answer
 
-Transparently fall back to general knowledge
+Keep the system behavior transparent and explainable
 
-Keep the architecture simple and explainable
-
-This project focuses more on correctness and clarity than on UI complexity.
+Understand how RAG systems work internally instead of relying on black-box tools
 
 Tech stack
+
 Backend
 
 Python
@@ -57,7 +54,7 @@ HuggingFace sentence-transformers
 
 Groq LLM API
 
-PyPDF for PDF parsing
+PyPDF
 
 Frontend
 
@@ -79,104 +76,124 @@ XplainDfile/
 │   │   ├── schemas.py
 │   │   └── config.py
 │   ├── requirements.txt
-│   └── .env (not committed)
+│   └── .env            (not committed)
 │
 ├── frontend/
 │   ├── index.html
 │   ├── app.js
 │   └── styles.css
 │
-├── README.md
+└── README.md
 
 Backend architecture overview
 
 main.py
-Entry point of the FastAPI server. Defines API routes for uploading files, chatting, resetting the session, and serves the frontend.
+Entry point of the FastAPI application. Defines API routes for file upload, chat, session reset, and also serves the frontend.
 
 upload.py
-Handles PDF validation and text extraction. Rejects unsupported or empty PDFs.
+Handles PDF validation and text extraction. Rejects unsupported file formats and empty PDFs.
 
 vectorstore.py
-Splits text into chunks, generates embeddings, and manages Pinecone index creation and deletion.
+Splits extracted text into chunks, generates embeddings, and manages Pinecone index creation and deletion.
 
 rag.py
-Core RAG logic. Retrieves relevant chunks, enforces context-only answering, and handles fallback to the LLM.
+Implements the core RAG logic. Retrieves relevant chunks, enforces context-only answering, and falls back to the language model when required.
 
 state.py
-Maintains in-memory session state (current document, retriever, index name).
+Maintains in-memory session state such as the active document, retriever, and vector index name.
 
 schemas.py
 Defines request and response models using Pydantic.
 
 config.py
-Centralized configuration for API keys, model names, and retrieval parameters.
+Centralized configuration for API keys, model selection, and retrieval parameters.
 
 Frontend overview
 
-The frontend is intentionally minimal:
+The frontend is intentionally minimal and framework-free:
 
-PDF-only upload
+PDF-only file upload
 
 Chat-style interface
 
-Clear indicator showing whether an answer came from:
+Clear indicator showing whether an answer came from the document or the language model
 
-the uploaded document
+Reset button to clear the current session
 
-or the language model
+The frontend communicates with the backend using simple fetch API calls.
 
-Reset button to clear the session and vector index
+How the system works (high level flow)
 
-The frontend communicates with the backend using simple fetch calls.
+User uploads a PDF
+
+Text is extracted and split into chunks
+
+Chunks are embedded and stored in Pinecone
+
+User asks a question
+
+Relevant chunks are retrieved using similarity search
+
+The model is instructed to answer only from the retrieved context
+
+If context is insufficient, the system falls back to the LLM
 
 How to run locally
-1. Clone the repository
+Clone the repository
 git clone https://github.com/your-username/XplainDfile.git
 cd XplainDfile
 
-2. Create and activate a virtual environment
+Create and activate a virtual environment
 python -m venv xplaindfile-env
-source xplaindfile-env/bin/activate   # Linux/Mac
-xplaindfile-env\Scripts\activate      # Windows
 
-3. Install dependencies
+
+Windows:
+
+xplaindfile-env\Scripts\activate
+
+
+Linux / macOS:
+
+source xplaindfile-env/bin/activate
+
+Install dependencies
 pip install -r backend/requirements.txt
 
-4. Set environment variables
+Set environment variables
 
-Create a .env file inside backend/:
+Create a .env file inside the backend/ directory:
 
 GROQ_API_KEY=your_groq_api_key
 PINECONE_API_KEY=your_pinecone_api_key
 
-5. Run the backend
+Run the backend server
 uvicorn app.main:app --reload
 
-6. Open in browser
+Open in browser
 http://localhost:8000
 
 Key learnings
 
-How RAG works end-to-end
+End-to-end implementation of a RAG system
 
-Importance of chunking and embedding choice
+Practical use of vector databases for semantic search
 
-Practical use of vector similarity search
+Importance of chunking and retrieval strategy
 
-Preventing hallucinations in document QA
+Prompt control to reduce hallucinations
 
-Structuring a clean FastAPI backend
+Clean FastAPI backend structuring
 
-Coordinating frontend and backend in an AI application
+Frontend and backend integration for AI applications
 
 Future improvements
 
-Multiple document support
+Support for multiple documents
 
 Persistent chat history
 
-More document formats
+Additional document formats
+
+Citation highlighting
 
 User authentication
-
-Citation highlighting in responses
