@@ -3,6 +3,7 @@
 XplainDfile is a document-based question answering web application. Users can upload a PDF file and ask questions about its content. The system first attempts to answer strictly from the uploaded document. If the document does not contain the answer, it transparently falls back to a general language model.
 
 This project was built to understand and implement a Retrieval Augmented Generation (RAG) system from scratch, with explicit control over retrieval, prompting, and fallback behavior.
+<img width="1887" height="849" alt="image" src="https://github.com/user-attachments/assets/24724671-a335-46f8-a6c0-41ba5b0a7afc" />
 
 ---
 
@@ -175,3 +176,4 @@ http://localhost:8000
 * User authentication
 
 ---
+
